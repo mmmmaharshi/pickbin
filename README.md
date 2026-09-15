@@ -2,7 +2,9 @@
 
 **What:** Picks the right binary from any GitHub release for your machine.
 
-## Install
+## CLI
+
+### Install
 
 ```bash
 go build -o pickbin.exe .
@@ -10,7 +12,7 @@ go build -o pickbin.exe .
 
 Or [download a release](https://github.com/mmmmaharshi/pickbin/releases) — single binary, no deps.
 
-## Run
+### Run
 
 ```bash
 pickbin https://github.com/px0-ai/px0
@@ -27,7 +29,16 @@ Asset:    px0-0.1.4-windows-amd64.exe   Size: 11.7 MB   Downloads: 48
 
 The browser opens the release page — see changelog, click your asset.
 
-## Usage
+## Web
+
+No install. Dark Scandinavian UI, Geist Pixel.
+
+```bash
+cd web && python -m http.server 8080
+# open http://localhost:8080
+```
+
+Or just double-click `web/index.html` and paste any `github.com/user/repo` URL.
 
 ## Usage
 
