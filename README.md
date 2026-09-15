@@ -4,6 +4,10 @@
 
 **Live:** https://pickbin.maharshi.work — paste any `github.com/user/repo` URL, no install.
 
+## Why
+
+GitHub releases list many files — `amd64`, `arm64`, `x86_64` — and it's not obvious which is yours. `amd64` means x86-64 (Intel and AMD), not "requires AMD CPU". pickbin detects your OS and CPU and recommends the exact asset.
+
 ## CLI
 
 ### Install
