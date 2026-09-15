@@ -310,7 +310,8 @@
   <a href="https://github.com/mmmmaharshi/pickbin">Source</a>
 </footer>
 
-<script>
+<script type="module">
+import { findBestMatch } from './platform.js';
 (() => {
   const $ = (id) => document.getElementById(id);
   const input = $("url-input");
@@ -398,82 +399,8 @@
     return null;
   }
 
-  function hasKeyword(name, keyword) {
-    return name.toLowerCase().includes(keyword.toLowerCase());
-  }
 
-  function archMatches(assetArch, goArch) {
-    const a = assetArch.toLowerCase();
-    const g = goArch.toLowerCase();
-    if (a === g) return true;
-    const synonyms = {
-      amd64: ["x86_64", "x64"],
-      arm64: ["aarch64"],
-      "386": ["i386", "i486", "i586", "i686", "x86", "ia32"],
-      arm: ["armv5", "armv6", "armv6l", "armv7", "armv7l", "armhf", "armel"],
-    };
-    for (const syn of synonyms[g] || []) {
-      if (a === syn) return true;
-    }
-    return false;
-  }
 
-  function hasOS(name, goOs) {
-    const aliases = {
-      linux: ["linux"],
-      windows: ["win", "windows", "win32", "win64"],
-      darwin: ["macos", "darwin", "osx", "apple-darwin"],
-    };
-    const lower = name.toLowerCase();
-    for (const t of aliases[goOs] || []) {
-      if (lower.includes(t)) return true;
-    }
-    return false;
-  }
-
-  function hasArch(name, goArch) {
-    const words = name.toLowerCase().split(/[-_.]/);
-    for (const w of words) {
-      if (archMatches(w, goArch)) return true;
-    }
-    return false;
-  }
-
-  function isNonBinary(name) {
-    const lower = name.toLowerCase();
-    const rejections = [".sha", ".md5", ".sha256", ".sha512", ".asc", ".sig", ".gpg", ".source", ".src", "_source", ".deb", ".rpm", ".apk", ".msi"];
-    for (const r of rejections) {
-      if (lower.includes(r)) return true;
-    }
-    return false;
-  }
-
-  function findBestMatch(assets, goOs, goArch) {
-    if (!assets || assets.length === 0) return null;
-
-    let best = null;
-    let bestScore = -1;
-
-    for (const a of assets) {
-      if (isNonBinary(a.name)) continue;
-
-      const osMatch = hasOS(a.name, goOs);
-      const archMatch = hasArch(a.name, goArch);
-      if (!osMatch && !archMatch) continue;
-
-      let score = 0;
-      if (osMatch) score += 10;
-      if (archMatch) score += 10;
-      score += Math.min(a.download_count || 0, 1000) / 1000;
-
-      if (score > bestScore) {
-        bestScore = score;
-        best = a;
-      }
-    }
-
-    return best;
-  }
 
   function buildReleasePageUrl(apiUrl, tag) {
     const prefix = "https://api.github.com/repos/";
