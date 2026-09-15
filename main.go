@@ -168,19 +168,18 @@ func archMatches(assetArch, goArch string) bool {
 	goLower := strings.ToLower(goArch)
 	aLower := strings.ToLower(assetArch)
 
-	// Direct match
 	if goLower == aLower { return true }
 
-	// amd64 synonyms
-	if goLower == "amd64" {
-		return aLower == "x86_64" || aLower == "x64" || aLower == "amd64"
+	synonyms := map[string][]string{
+		"amd64": {"x86_64", "x64"},
+		"arm64": {"aarch64"},
+		"386":   {"i386", "i486", "i586", "i686", "x86", "ia32"},
+		"arm":   {"armv5", "armv6", "armv6l", "armv7", "armv7l", "armhf", "armel"},
 	}
 
-	// arm64 synonyms
-	if goLower == "arm64" {
-		return aLower == "aarch64" || aLower == "arm64"
+	for _, syn := range synonyms[goLower] {
+		if aLower == syn { return true }
 	}
-
 	return false
 }
 
@@ -289,29 +288,9 @@ func hasOS(name, goOS string) bool {
 }
 
 func hasArch(name, goArch string) bool {
-	// Split on common delimiters to get individual words
-	words := tokenize(name)
-
-	// Find which word matches this architecture
-	for _, w := range words {
+	for _, w := range tokenize(name) {
 		if archMatches(w, goArch) { return true }
 	}
-
-	// Also check as substrings (handles x86_64, arm64, etc.)
-	substrings := map[string]string{
-		"amd64": "amd64",
-		"x86_64":"amd64",
-		"x64":   "amd64",
-		"aarch64":"arm64",
-		"arm64": "arm64",
-	}
-
-	for assetSubstr, goTarget := range substrings {
-		if goArch == goTarget && strings.Contains(name, assetSubstr) {
-			return true
-		}
-	}
-
 	return false
 }
 

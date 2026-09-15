@@ -42,8 +42,10 @@ Parse URL → GET release JSON → filter non-binaries → score by OS+arch → 
 | Concept | Recognizes |
 |---|---|
 | OS | `linux`, `windows`, `win`, `darwin`, `macos` |
-| 64-bit CPU | `x86_64`, `amd64`, `x64` |
-| ARM 64-bit | `aarch64`, `arm64` |
+| 64-bit x86 | `x86_64`, `amd64`, `x64` |
+| 32-bit x86 | `i386`, `i686`, `x86`, `ia32` |
+| 64-bit ARM | `aarch64`, `arm64` |
+| 32-bit ARM | `armv6`, `armv7`, `armhf` |
 
 ### Rejected silently
 
@@ -54,6 +56,7 @@ Checksums (`.sha`, `.md5`), signatures (`.asc`, `.sig`), packages (`.deb`, `.rpm
 Working:
 
 - Parses GitHub release URLs AND plain repo URLs (auto-picks latest)
+- Detects actual system architecture via `runtime.GOARCH` (64-bit and 32-bit)
 - Filters by MIME type, then matches OS + arch via keyword scoring
 - Tiebreaks tied scores by download count
 - Works on Windows with `.exe` and `.zip` bundle formats
