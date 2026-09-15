@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"os/exec"
 	"runtime"
 	"strings"
 )
@@ -52,6 +53,11 @@ func main() {
 	fmt.Printf("Downloads: %d\n", best.DownloadCount)
 	if best.ContentType != "" {
 		fmt.Printf("Type:     %s\n", best.ContentType)
+	}
+
+	// Open in browser
+	if err := openBrowser(getDownloadURL(best)); err != nil {
+		fmt.Fprintf(os.Stderr, "Could not open browser: %v\n", err)
 	}
 }
 
@@ -323,4 +329,17 @@ func stripExtension(name string) string {
 		return name[:lastDot]
 	}
 	return name
+}
+
+func openBrowser(url string) error {
+	var cmd *exec.Cmd
+	switch runtime.GOOS {
+	case "windows":
+		cmd = exec.Command("cmd", "/c", "start", "", url)
+	case "darwin":
+		cmd = exec.Command("open", url)
+	default: // linux and others
+		cmd = exec.Command("xdg-open", url)
+	}
+	return cmd.Start()
 }

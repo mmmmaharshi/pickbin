@@ -63,9 +63,8 @@ Working:
 
 Not done yet:
 
-1. Browser opener (`start`/`open`/`xdg-open`) — prints URL only
-2. Response caching — every invocation hits the GitHub API
-3. Output truncation — shows all assets when nothing matches; could show top-3 candidates instead
+1. Response caching — every invocation hits the GitHub API
+2. Output truncation — shows all assets when nothing matches; could show top-3 candidates instead
 
 ## License
 
