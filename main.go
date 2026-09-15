@@ -37,6 +37,13 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Derive the release page URL for browser opening
+	releasePageURL := buildReleasePageURL(apiURL, tag)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error fetching release: %v\n", err)
+		os.Exit(1)
+	}
+
 	best := findBestMatch(assets)
 	if best == nil {
 		fmt.Println("No matching binary found. Available assets:")
@@ -55,8 +62,8 @@ func main() {
 		fmt.Printf("Type:     %s\n", best.ContentType)
 	}
 
-	// Open in browser
-	if err := openBrowser(getDownloadURL(best)); err != nil {
+	// Open release page in browser
+	if err := openBrowser(releasePageURL); err != nil {
 		fmt.Fprintf(os.Stderr, "Could not open browser: %v\n", err)
 	}
 }
@@ -110,6 +117,22 @@ func parseRepoURL(raw string) string {
 	}
 
 	return fmt.Sprintf("%s%s/%s/releases/latest", apiPrefix, pathParts[0], pathParts[1])
+}
+
+func buildReleasePageURL(apiURL, tag string) string {
+	// Convert API URL to GitHub HTML release page
+	// api.github.com/repos/{owner}/{repo}/releases/tags/{tag}
+	// → github.com/{owner}/{repo}/releases/tag/{tag}
+
+	const apiPrefix = "https://api.github.com/repos/"
+	if !strings.HasPrefix(apiURL, apiPrefix) {
+		return apiURL
+	}
+
+	rest := strings.TrimPrefix(apiURL, apiPrefix)
+	// API uses /tags/, HTML uses /tag/
+	rest = strings.Replace(rest, "/releases/tags/", "/releases/tag/", 1)
+	return "https://github.com/" + rest
 }
 
 type Asset struct {
