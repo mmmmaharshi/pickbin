@@ -4,13 +4,11 @@
 
 ## Install
 
-| Platform | Command |
-|---|---|
-| macOS / Linux | `brew install mmmmaharshi/tap/pickbin` |
-| Windows | `winget install mmmmaharshi.pickbin` |
-| Go (any) | `go install github.com/mmmmaharshi/pickbin@latest` |
+```bash
+go build -o pickbin.exe .
+```
 
-Or [download a release](https://github.com/mmmmaharshi/pickbin/releases) directly — single binary, no deps.
+Or [download a release](https://github.com/mmmmaharshi/pickbin/releases) — single binary, no deps.
 
 ## Run
 
