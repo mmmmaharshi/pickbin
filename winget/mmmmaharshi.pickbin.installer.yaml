@@ -23,14 +23,14 @@ Installers:
   - Architecture: x64
     InstallerType: portable
     InstallerUrl: https://github.com/mmmmaharshi/pickbin/releases/download/v0.1.0/pickbin-windows-amd64.exe
-    InstallerSha256: PLACEHOLDER_SHA256_WINDOWS_AMD64
+    InstallerSha256: 6cb51585e25c40e2c198b4f1c66cbfcfd724d2732ea7846d01f732a6fe5116f4
     Scope: user
     Commands:
       - pickbin
   - Architecture: arm64
     InstallerType: portable
     InstallerUrl: https://github.com/mmmmaharshi/pickbin/releases/download/v0.1.0/pickbin-windows-arm64.exe
-    InstallerSha256: PLACEHOLDER_SHA256_WINDOWS_ARM64
+    InstallerSha256: e40e7997e15a0f885a4442fefe0a5bf3939e9b0f4b00996912cf66aad1bf393e
     Scope: user
     Commands:
       - pickbin
