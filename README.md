@@ -6,7 +6,7 @@
 
 ```bash
 cd pickbin && go build -o pickbin.exe .
-.\pickbin.exe https://github.com/px0-ai/px0/releases/tag/v0.1.4
+.\pickbin.exe https://github.com/px0-ai/px0
 ```
 
 Result:
@@ -20,13 +20,14 @@ Asset:    px0-0.1.4-windows-amd64.exe   Size: 11.7 MB   Downloads: 48
 ## Usage
 
 ```
-pickbin <any-github-release-url>
+pickbin <github-repo-or-release-url>
 ```
 
 | Input | What happens |
 |---|---|
-| URL ending `/tag/vX.Y.Z` | Fetches that tag's release assets |
-| GitHub API URL | Same thing — parses directly |
+| `github.com/user/repo` | Picks **latest** release automatically |
+| URL ending `/tag/vX.Y.Z` | Fetches that specific version's assets |
+| GitHub API URL (`api.github.com/repos/...`) | Same as tag format or plain repo |
 | No arguments | Prints usage and exits |
 | Bad URL | Prints error and exits |
 
@@ -52,7 +53,7 @@ Checksums (`.sha`, `.md5`), signatures (`.asc`, `.sig`), packages (`.deb`, `.rpm
 
 Working:
 
-- Parses GitHub release URLs (tag format and API format)
+- Parses GitHub release URLs AND plain repo URLs (auto-picks latest)
 - Filters by MIME type, then matches OS + arch via keyword scoring
 - Tiebreaks tied scores by download count
 - Works on Windows with `.exe` and `.zip` bundle formats
