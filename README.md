@@ -51,21 +51,6 @@ Parse URL → GET release JSON → filter non-binaries → score by OS+arch → 
 
 Checksums (`.sha`, `.md5`), signatures (`.asc`, `.sig`), packages (`.deb`, `.rpm`, `.msi`), source tarballs. Everything else passes through.
 
-## Current state
-
-Working:
-
-- Parses GitHub release URLs AND plain repo URLs (auto-picks latest)
-- Detects actual system architecture via `runtime.GOARCH` (64-bit and 32-bit)
-- Filters by MIME type, then matches OS + arch via keyword scoring
-- Tiebreaks tied scores by download count
-- Works on Windows with `.exe` and `.zip` bundle formats
-
-Not done yet:
-
-1. Response caching — every invocation hits the GitHub API
-2. Output truncation — shows all assets when nothing matches; could show top-3 candidates instead
-
 ## License
 
 MIT
