@@ -2,6 +2,8 @@
 
 **What:** Picks the right binary from any GitHub release for your machine.
 
+**Live:** https://pickbin.maharshi.work — paste any `github.com/user/repo` URL, no install.
+
 ## CLI
 
 ### Install
@@ -31,14 +33,16 @@ The browser opens the release page — see changelog, click your asset.
 
 ## Web
 
-No install. Dark Scandinavian UI, Geist Pixel.
+**Live:** https://pickbin.maharshi.work — dark Scandinavian UI, Geist Pixel. Paste any `github.com/user/repo` URL.
+
+Local:
 
 ```bash
 cd web && python -m http.server 8080
 # open http://localhost:8080
 ```
 
-Or just double-click `web/index.html` and paste any `github.com/user/repo` URL.
+Or just double-click `web/index.html`.
 
 ## Usage
 
