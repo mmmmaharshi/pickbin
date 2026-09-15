@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>pickbin</title>
+<style>
+  :root {
+    --canvas: #0A0A0A;
+    --surface: #0A0A0A;
+    --ink: #FFFFFF;
+    --ink-secondary: rgb(255 255 255 / 56%);
+    --ink-tertiary: rgb(255 255 255 / 36%);
+    --border: rgb(255 255 255 / 10%);
+    --border-strong: rgb(255 255 255 / 18%);
+    --hover: rgb(255 255 255 / 9%);
+    --pressed: rgb(255 255 255 / 14%);
+    --focus: rgb(255 255 255 / 60%);
+    --radius: 8px;
+    --space: 8px;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--canvas);
+    color: var(--ink);
+    font-size: 16px;
+    line-height: 1.5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 64px 24px;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 560px;
+  }
+
+  h1 {
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    margin-bottom: calc(var(--space) * 2);
+  }
+
+  .subtitle {
+    color: var(--ink-secondary);
+    font-size: 15px;
+    margin-bottom: calc(var(--space) * 6);
+  }
+
+  .input-group {
+    display: flex;
+    gap: var(--space);
+    margin-bottom: calc(var(--space) * 4);
+  }
+
+  input[type="url"] {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--ink);
+    font-size: 15px;
+    font-family: inherit;
+    padding: 12px 16px;
+    outline: none;
+    transition: border-color 150ms ease;
+  }
+
+  input[type="url"]::placeholder {
+    color: var(--ink-tertiary);
+  }
+
+  input[type="url"]:focus {
+    border-color: var(--focus);
+  }
+
+  button {
+    background: var(--ink);
+    color: var(--canvas);
+    border: none;
+    border-radius: var(--radius);
+    font-size: 15px;
+    font-weight: 500;
+    font-family: inherit;
+    padding: 12px 24px;
+    cursor: pointer;
+    transition: opacity 150ms ease, transform 100ms ease;
+    white-space: nowrap;
+  }
+
+  button:hover {
+    opacity: 0.9;
+  }
+
+  button:active {
+    transform: scale(0.97);
+  }
+
+  button:disabled {
+    opacity: 0.4;
+    cursor: default;
+    transform: none;
+  }
+
+  .result {
+    display: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: calc(var(--space) * 3);
+    margin-top: calc(var(--space) * 4);
+  }
+
+  .result.visible {
+    display: block;
+  }
+
+  .result-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space);
+    margin-bottom: calc(var(--space) * 3);
+  }
+
+  .result-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  .result-title {
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  .result-os {
+    color: var(--ink-secondary);
+    font-size: 14px;
+    margin-bottom: calc(var(--space) * 3);
+  }
+
+  .asset-card {
+    background: var(--hover);
+    border-radius: var(--radius);
+    padding: calc(var(--space) * 2) calc(var(--space) * 3);
+    margin-bottom: calc(var(--space) * 2);
+  }
+
+  .asset-name {
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 4px;
+    word-break: break-all;
+  }
+
+  .asset-meta {
+    color: var(--ink-secondary);
+    font-size: 13px;
+  }
+
+  .download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: calc(var(--space) * 2);
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 8px 16px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    transition: background 150ms ease;
+  }
+
+  .download-btn:hover {
+    background: var(--hover);
+  }
+
+  .error {
+    display: none;
+    color: #ff6b6b;
+    font-size: 14px;
+    margin-top: calc(var(--space) * 2);
+  }
+
+  .error.visible {
+    display: block;
+  }
+
+  .loading {
+    display: none;
+    color: var(--ink-secondary);
+    font-size: 14px;
+    margin-top: calc(var(--space) * 2);
+  }
+
+  .loading.visible {
+    display: block;
+  }
+
+  .no-match {
+    color: var(--ink-secondary);
+    font-size: 14px;
+    margin-top: calc(var(--space) * 2);
+  }
+
+  footer {
+    margin-top: auto;
+    padding-top: calc(var(--space) * 8);
+    color: var(--ink-tertiary);
+    font-size: 13px;
+  }
+
+  footer a {
+    color: var(--ink-tertiary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  footer a:hover {
+    color: var(--ink-secondary);
+  }
+
+  @media (max-width: 480px) {
+    body {
+      padding: 40px 20px;
+    }
+
+    .input-group {
+      flex-direction: column;
+    }
+
+    button {
+      width: 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      transition: none !important;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>pickbin</h1>
+  <p class="subtitle">Paste a GitHub repo or release URL. We'll find the right binary for your machine.</p>
+
+  <div class="input-group">
+    <input type="url" id="url-input" placeholder="github.com/user/repo" autocomplete="off" spellcheck="false">
+    <button id="go-btn">Find binary</button>
+  </div>
+
+  <div class="loading" id="loading">Fetching release…</div>
+  <div class="error" id="error"></div>
+
+  <div class="result" id="result">
+    <div class="result-header">
+      <svg class="result-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M10 2v16M2 10h16"/>
+      </svg>
+      <span class="result-title" id="result-title"></span>
+    </div>
+    <div class="result-os" id="result-os"></div>
+    <div class="asset-card">
+      <div class="asset-name" id="asset-name"></div>
+      <div class="asset-meta" id="asset-meta"></div>
+      <a class="download-btn" id="download-link" href="#" target="_blank" rel="noopener">
+        <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M10 3v10m0 0l-4-4m4 4l4-4M4 17h12"/>
+        </svg>
+        Open release page
+      </a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <a href="https://github.com/mmmmaharshi/pickbin">Source</a>
+</footer>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const input = $("url-input");
+  const btn = $("go-btn");
+  const loading = $("loading");
+  const error = $("error");
+  const result = $("result");
+  const resultTitle = $("result-title");
+  const resultOs = $("result-os");
+  const assetName = $("asset-name");
+  const assetMeta = $("asset-meta");
+  const downloadLink = $("download-link");
+
+  function show(el) { el.classList.add("visible"); }
+  function hide(el) { el.classList.remove("visible"); }
+
+  function detectPlatform() {
+    const ua = navigator.userAgent;
+    const platform = navigator.platform || "";
+
+    let os, arch;
+
+    if (/Windows/.test(ua)) os = "windows";
+    else if (/Mac/.test(ua) || /macOS/.test(ua)) os = "darwin";
+    else if (/Linux/.test(ua)) os = "linux";
+    else os = "unknown";
+
+    if (/arm64|aarch64/i.test(ua) || /ARM64/.test(platform)) arch = "arm64";
+    else if (/x64|x86_64|Win64|WOW64/i.test(ua)) arch = "amd64";
+    else if (/i686|i386|x86/i.test(ua)) arch = "386";
+    else arch = "amd64";
+
+    return { os, arch };
+  }
+
+  function parseUrl(raw) {
+    if (!raw) return null;
+
+    raw = raw.trim();
+
+    if (!/^https?:\/\//.test(raw)) {
+      raw = "https://" + raw;
+    }
+
+    let url;
+    try {
+      url = new URL(raw);
+    } catch {
+      return null;
+    }
+
+    const host = url.hostname;
+    const parts = url.pathname.split("/").filter(Boolean);
+
+    let apiUrl, tag;
+
+    if (host === "api.github.com") {
+      if (parts.length >= 4 && parts[0] === "repos" && parts[2] === "releases") {
+        if (parts[3] === "tags" && parts[4]) {
+          return { apiUrl: raw, tag: parts[4] };
+        }
+        if (parts[3] === "latest") {
+          return { apiUrl: raw, tag: "latest" };
+        }
+        if (parts.length === 3) {
+          return { apiUrl: `https://api.github.com/repos/${parts[0]}/${parts[1]}/releases/latest`, tag: "latest" };
+        }
+      }
+      return null;
+    }
+
+    if (host !== "github.com" && host !== "www.github.com") return null;
+
+    if (parts.length >= 4 && parts[2] === "releases" && parts[3] === "tag") {
+      tag = parts[4];
+      apiUrl = `https://api.github.com/repos/${parts[0]}/${parts[1]}/releases/tags/${tag}`;
+      return { apiUrl, tag };
+    }
+
+    if (parts.length >= 2) {
+      apiUrl = `https://api.github.com/repos/${parts[0]}/${parts[1]}/releases/latest`;
+      return { apiUrl, tag: "latest" };
+    }
+
+    return null;
+  }
+
+  function hasKeyword(name, keyword) {
+    return name.toLowerCase().includes(keyword.toLowerCase());
+  }
+
+  function archMatches(assetArch, goArch) {
+    const a = assetArch.toLowerCase();
+    const g = goArch.toLowerCase();
+    if (a === g) return true;
+    const synonyms = {
+      amd64: ["x86_64", "x64"],
+      arm64: ["aarch64"],
+      "386": ["i386", "i486", "i586", "i686", "x86", "ia32"],
+      arm: ["armv5", "armv6", "armv6l", "armv7", "armv7l", "armhf", "armel"],
+    };
+    for (const syn of synonyms[g] || []) {
+      if (a === syn) return true;
+    }
+    return false;
+  }
+
+  function hasOS(name, goOs) {
+    const aliases = {
+      linux: ["linux"],
+      windows: ["win", "windows", "win32", "win64"],
+      darwin: ["macos", "darwin", "osx", "apple-darwin"],
+    };
+    const lower = name.toLowerCase();
+    for (const t of aliases[goOs] || []) {
+      if (lower.includes(t)) return true;
+    }
+    return false;
+  }
+
+  function hasArch(name, goArch) {
+    const words = name.toLowerCase().split(/[-_.]/);
+    for (const w of words) {
+      if (archMatches(w, goArch)) return true;
+    }
+    return false;
+  }
+
+  function isNonBinary(name) {
+    const lower = name.toLowerCase();
+    const rejections = [".sha", ".md5", ".sha256", ".sha512", ".asc", ".sig", ".gpg", ".source", ".src", "_source", ".deb", ".rpm", ".apk", ".msi"];
+    for (const r of rejections) {
+      if (lower.includes(r)) return true;
+    }
+    return false;
+  }
+
+  function findBestMatch(assets, goOs, goArch) {
+    if (!assets || assets.length === 0) return null;
+
+    let best = null;
+    let bestScore = -1;
+
+    for (const a of assets) {
+      if (isNonBinary(a.name)) continue;
+
+      const osMatch = hasOS(a.name, goOs);
+      const archMatch = hasArch(a.name, goArch);
+      if (!osMatch && !archMatch) continue;
+
+      let score = 0;
+      if (osMatch) score += 10;
+      if (archMatch) score += 10;
+      score += Math.min(a.download_count || 0, 1000) / 1000;
+
+      if (score > bestScore) {
+        bestScore = score;
+        best = a;
+      }
+    }
+
+    return best;
+  }
+
+  function buildReleasePageUrl(apiUrl, tag) {
+    const prefix = "https://api.github.com/repos/";
+    if (!apiUrl.startsWith(prefix)) return apiUrl;
+    let rest = apiUrl.slice(prefix.length);
+    rest = rest.replace("/releases/tags/", "/releases/tag/");
+    return "https://github.com/" + rest;
+  }
+
+  function formatSize(bytes) {
+    if (bytes < 1024) return `${bytes} B`;
+    const units = ["KB", "MB", "GB"];
+    let val = bytes / 1024;
+    let i = 0;
+    while (val >= 1024 && i < units.length - 1) {
+      val /= 1024;
+      i++;
+    }
+    return `${val.toFixed(1)} ${units[i]}`;
+  }
+
+  async function findBinary(rawUrl) {
+    hide(error);
+    hide(result);
+    show(loading);
+    btn.disabled = true;
+
+    try {
+      const parsed = parseUrl(rawUrl);
+      if (!parsed) {
+        throw new Error("Not a valid GitHub URL");
+      }
+
+      const res = await fetch(parsed.apiUrl, {
+        headers: { Accept: "application/vnd.github.v3+json" },
+      });
+
+      if (!res.ok) {
+        throw new Error(`GitHub API error: ${res.status}`);
+      }
+
+      const release = await res.json();
+      const assets = release.assets || [];
+      const platform = detectPlatform();
+      const match = findBestMatch(assets, platform.os, platform.arch);
+
+      hide(loading);
+      btn.disabled = false;
+
+      if (!match) {
+        error.textContent = "No matching binary found for your platform.";
+        show(error);
+        return;
+      }
+
+      const osLabels = { windows: "Windows", darwin: "macOS", linux: "Linux" };
+      const archLabels = { amd64: "AMD64 (x64)", arm64: "ARM64", "386": "x86 (32-bit)", arm: "ARM (32-bit)" };
+      const osLabel = osLabels[platform.os] || platform.os;
+      const archLabel = archLabels[platform.arch] || platform.arch;
+
+      resultTitle.textContent = `${osLabel} / ${archLabel} detected`;
+      resultOs.textContent = `Tag: ${release.tag_name || parsed.tag}  ·  ${assets.length} assets available`;
+      assetName.textContent = match.name;
+      assetMeta.textContent = `${formatSize(match.size)}  ·  ${match.download_count?.toLocaleString() || 0} downloads`;
+      downloadLink.href = buildReleasePageUrl(parsed.apiUrl, parsed.tag);
+      show(result);
+
+    } catch (err) {
+      hide(loading);
+      btn.disabled = false;
+      error.textContent = err.message || "Something went wrong.";
+      show(error);
+    }
+  }
+
+  btn.addEventListener("click", () => findBinary(input.value));
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") findBinary(input.value);
+  });
+})();
+</script>
+</body>
+</html>
