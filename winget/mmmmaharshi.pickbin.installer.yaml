@@ -1,0 +1,39 @@
+PackageIdentifier: mmmmaharshi.pickbin
+PackageVersion: 0.1.0
+PackageLocale: en-US
+Publisher: mmmmaharshi
+PackageName: pickbin
+License: MIT
+LicenseUrl: https://github.com/mmmmaharshi/pickbin/blob/main/LICENSE
+ShortDescription: Pick the right binary from any GitHub release for your machine
+Description: |
+  Pass a GitHub repo or release URL. pickbin detects your OS and CPU
+  architecture, then recommends the exact asset to download.
+Moniker: pickbin
+Tags:
+  - cli
+  - github
+  - binary
+  - downloader
+InstallModes:
+  - interactive
+  - silent
+  - silentWithProgress
+Installers:
+  - Architecture: x64
+    InstallerType: portable
+    InstallerUrl: https://github.com/mmmmaharshi/pickbin/releases/download/v0.1.0/pickbin-windows-amd64.exe
+    InstallerSha256: PLACEHOLDER_SHA256_WINDOWS_AMD64
+    Scope: user
+    Commands:
+      - pickbin
+  - Architecture: arm64
+    InstallerType: portable
+    InstallerUrl: https://github.com/mmmmaharshi/pickbin/releases/download/v0.1.0/pickbin-windows-arm64.exe
+    InstallerSha256: PLACEHOLDER_SHA256_WINDOWS_ARM64
+    Scope: user
+    Commands:
+      - pickbin
+ReleaseNotesUrl: https://github.com/mmmmaharshi/pickbin/releases/tag/v0.1.0
+ManifestType: singleton
+ManifestVersion: 1.9.0

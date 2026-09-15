@@ -2,11 +2,20 @@
 
 **What:** Picks the right binary from any GitHub release for your machine.
 
-## Install & run
+## Install
+
+| Platform | Command |
+|---|---|
+| macOS / Linux | `brew install mmmmaharshi/tap/pickbin` |
+| Windows | `winget install mmmmaharshi.pickbin` |
+| Go (any) | `go install github.com/mmmmaharshi/pickbin@latest` |
+
+Or [download a release](https://github.com/mmmmaharshi/pickbin/releases) directly — single binary, no deps.
+
+## Run
 
 ```bash
-cd pickbin && go build -o pickbin.exe .
-.\pickbin.exe https://github.com/px0-ai/px0
+pickbin https://github.com/px0-ai/px0
 ```
 
 Result:
@@ -15,7 +24,12 @@ Result:
 ✓ Detected: windows / Amd64
 Recommended: https://github.com/.../px0-0.1.4-windows-amd64.exe
 Asset:    px0-0.1.4-windows-amd64.exe   Size: 11.7 MB   Downloads: 48
+✓ Opening release page in browser...
 ```
+
+The browser opens the release page — see changelog, click your asset.
+
+## Usage
 
 ## Usage
 
