@@ -48,6 +48,7 @@ jobs:
           go-version: "1.23"
 
       - name: Build binary
+        shell: bash
         env:
           GOOS: ${{ matrix.goos }}
           GOARCH: ${{ matrix.goarch }}
@@ -56,6 +57,7 @@ jobs:
           go build -ldflags="-s -w" -o "$output" .
 
       - name: Upload release asset
+        shell: bash
         uses: softprops/action-gh-release@v2
         with:
           files: pickbin-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.ext }}
