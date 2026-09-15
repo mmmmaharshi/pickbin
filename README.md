@@ -1,58 +1,67 @@
 # pickbin
 
-One command. Right binary. No guessing.
+**What:** Picks the right binary from any GitHub release for your machine.
 
-## What it does
+## Install & run
 
-Pass a GitHub release URL. It tells you which asset matches your machine.
-
+```bash
+cd pickbin && go build -o pickbin.exe .
+.\pickbin.exe https://github.com/px0-ai/px0/releases/tag/v0.1.4
 ```
-pickbin https://github.com/user/repo/releases/tag/v1.0
-```
 
-Output:
+Result:
 
 ```
 ✓ Detected: windows / Amd64
-Recommended: https://github.com/user/repo/releases/download/v1.0/app-v1.0-windows-amd64.exe
-Asset:    app-v1.0-windows-amd64.exe
-Size:     11.7 MB
-Downloads: 48
+Recommended: https://github.com/.../px0-0.1.4-windows-amd64.exe
+Asset:    px0-0.1.4-windows-amd64.exe   Size: 11.7 MB   Downloads: 48
 ```
-
-## Quick start
-
-| Step | Command |
-|------|---------|
-| Install Go | `winget install GoLang.Go` (or from go.dev) |
-| Build | `cd pickbin && go build -o pickbin.exe .` |
-| Run | `.\pickbin.exe <release-url>` |
-
-That's it. One executable. No dependencies.
-
-## How it decides
-
-```
-URL → parse owner/repo/tag → fetch release JSON → filter non-binaries → score by OS + arch → tiebreak by downloads
-```
-
-- **OS keywords**: `windows`, `win`, `linux`, `darwin`, `macos`
-- **Arch synonyms**: `x86_64` = `amd64`, `aarch64` = `arm64`
-- **Rejected**: checksums (`.sha`), signatures (`.asc`), packages (`.deb`, `.rpm`), source tarballs
 
 ## Usage
 
 ```
-pickbin <github-release-url>
-pickbin https://github.com/BurntSushi/ripgrep/releases/tag/14.1.0
-pickbin https://api.github.com/repos/BurntSushi/ripgrep/releases/tags/14.1.0  # API URL works too
+pickbin <any-github-release-url>
 ```
 
-## Known gaps
+| Input | What happens |
+|---|---|
+| URL ending `/tag/vX.Y.Z` | Fetches that tag's release assets |
+| GitHub API URL | Same thing — parses directly |
+| No arguments | Prints usage and exits |
+| Bad URL | Prints error and exits |
 
-1. No browser opener — copies URL but doesn't launch it (`start`/`open`/`xdg-open`)
-2. No cache — every call hits the GitHub API
-3. Shows full asset list if nothing matches — could truncate to top-3 candidates
+## How it picks
+
+```
+Parse URL → GET release JSON → filter non-binaries → score by OS+arch → tiebreak downloads
+```
+
+### Matching keywords
+
+| Concept | Recognizes |
+|---|---|
+| OS | `linux`, `windows`, `win`, `darwin`, `macos` |
+| 64-bit CPU | `x86_64`, `amd64`, `x64` |
+| ARM 64-bit | `aarch64`, `arm64` |
+
+### Rejected silently
+
+Checksums (`.sha`, `.md5`), signatures (`.asc`, `.sig`), packages (`.deb`, `.rpm`, `.msi`), source tarballs. Everything else passes through.
+
+## Current state
+
+Working:
+
+- Parses GitHub release URLs (tag format and API format)
+- Filters by MIME type, then matches OS + arch via keyword scoring
+- Tiebreaks tied scores by download count
+- Works on Windows with `.exe` and `.zip` bundle formats
+
+Not done yet:
+
+1. Browser opener (`start`/`open`/`xdg-open`) — prints URL only
+2. Response caching — every invocation hits the GitHub API
+3. Output truncation — shows all assets when nothing matches; could show top-3 candidates instead
 
 ## License
 
