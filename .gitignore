@@ -1,7 +1,1 @@
 *.exe
-*.bin
-*.dylib
-*.dll
-*.so
-/Makefile
-/Cargo.toml.lock
