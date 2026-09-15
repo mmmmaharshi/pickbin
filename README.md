@@ -33,7 +33,7 @@ The browser opens the release page — see changelog, click your asset.
 
 ## Web
 
-**Live:** https://pickbin.maharshi.work — dark Scandinavian UI, Geist Pixel. Paste any `github.com/user/repo` URL.
+**Live:** https://pickbin.maharshi.work — paste any `github.com/user/repo` URL.
 
 Local:
 
