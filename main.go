@@ -13,14 +13,20 @@ import (
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Fprintf(os.Stderr, "Usage: pickbin <github-release-url>\n")
+		fmt.Fprintf(os.Stderr, "Usage: pickbin <github-repo-or-release-url>\n")
 		os.Exit(1)
 	}
 
-	releaseURL := os.Args[1]
-	apiURL, tag := parseGitHubURL(releaseURL)
+	releaseInput := os.Args[1]
+
+	// Try specific release URL first, fall back to plain repo
+	apiURL, tag := parseGitHubURL(releaseInput)
 	if apiURL == "" {
-		fmt.Fprintf(os.Stderr, "Error: not a valid GitHub release URL\n")
+		apiURL = parseRepoURL(releaseInput)
+		tag = "latest"
+	}
+	if apiURL == "" {
+		fmt.Fprintf(os.Stderr, "Error: not a valid GitHub URL\n")
 		os.Exit(1)
 	}
 
@@ -50,8 +56,6 @@ func main() {
 }
 
 func parseGitHubURL(raw string) (apiURL string, tag string) {
-	// Accept both https://github.com/user/repo/releases/tag/v1.0 and
-	// https://api.github.com/repos/user/repo/releases/tags/v1.0
 	const apiPrefix = "https://api.github.com/repos/"
 
 	if strings.HasPrefix(raw, apiPrefix) {
@@ -76,6 +80,30 @@ func parseGitHubURL(raw string) (apiURL string, tag string) {
 	tag = pathParts[len(pathParts)-1]
 
 	return fmt.Sprintf("%s%s/%s/releases/tags/%s", apiPrefix, user, repo, tag), tag
+}
+
+func parseRepoURL(raw string) string {
+	u, err := url.Parse(raw)
+	if err != nil {
+		return ""
+	}
+
+	// Accept: github.com/user/repo OR api.github.com/repos/user/repo
+	const apiPrefix = "https://api.github.com/repos/"
+	if strings.HasPrefix(raw, apiPrefix) {
+		rest := strings.TrimSuffix(raw[len(apiPrefix):], "/")
+		parts := strings.Split(rest, "/")
+		if len(parts) == 2 && parts[0] != "" && parts[1] != "" {
+			return fmt.Sprintf("%s%s/releases/latest", apiPrefix, rest)
+		}
+	}
+
+	pathParts := strings.Split(strings.Trim(u.Path, "/"), "/")
+	if len(pathParts) < 2 || pathParts[0] == "" || pathParts[1] == "" {
+		return ""
+	}
+
+	return fmt.Sprintf("%s%s/%s/releases/latest", apiPrefix, pathParts[0], pathParts[1])
 }
 
 type Asset struct {
